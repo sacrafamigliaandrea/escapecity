@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guarda Due Volte — Laboratorio di lettura lenta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-deep:#071912;
+  --bg-panel:#0d2a1c;
+  --bg-elevated:#143a29;
+  --bg-modal:#1a4d36;
+  --border:#1f5a3a;
+  --border-soft:#2d7a51;
+  --text-primary:#e8f5ec;
+  --text-secondary:#a5cdb3;
+  --text-muted:#6b8e7a;
+  --accent:#4ade80;
+  --accent-bright:#86efac;
+  --accent-dim:#22c55e;
+  --warm:#fbbf24;
+  --warm-bright:#fcd34d;
+  --warm-dim:#d97706;
+  --amber-soft:#fb923c;
+  --info:#60a5fa;
+  --shadow-lg:0 20px 60px rgba(0,0,0,.45);
+  --shadow-md:0 8px 24px rgba(0,0,0,.3);
+  --glow-accent:0 0 24px rgba(74,222,128,.35);
+  --glow-warm:0 0 32px rgba(251,191,36,.45);
+  --radius-sm:6px;
+  --radius-md:12px;
+  --radius-lg:20px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow-x:hidden}
+body{
+  font-family:'Syne',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:radial-gradient(ellipse at top,var(--bg-panel) 0%,var(--bg-deep) 70%);
+  color:var(--text-primary);
+  min-height:100vh;
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- HEADER ---------- */
+.topbar{
+  position:fixed;top:0;left:0;right:0;
+  height:56px;
+  background:rgba(10,30,20,.75);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;
+  z-index:100;
+}
+.topbar-left{display:flex;align-items:center;gap:14px}
+.topbar-logo{
+  width:28px;height:28px;
+  display:flex;align-items:center;justify-content:center;
+}
+.topbar-title{
+  font-family:'Cormorant Garamond',serif;
+  font-weight:600;font-size:22px;
+  letter-spacing:.5px;
+}
+.topbar-title em{color:var(--accent-bright);font-style:italic}
+.topbar-right{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--text-secondary)}
+.topbar-badge{
+  background:var(--bg-elevated);
+  border:1px solid var(--border-soft);
+  padding:6px 12px;border-radius:999px;
+  font-size:12px;letter-spacing:.5px;
+  display:flex;align-items:center;gap:8px;
+}
+.topbar-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+/* ---------- MAIN LAYOUT ---------- */
+.app{padding-top:56px;min-height:100vh;display:flex;flex-direction:column}
+.screen{display:none;animation:fadeIn .5s ease}
+.screen.active{display:flex;flex-direction:column;flex:1}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ---------- INTRO SCREEN ---------- */
+#screen-intro{align-items:center;justify-content:center;padding:48px 24px}
+.intro-wrap{max-width:760px;width:100%;text-align:center}
+.intro-kicker{
+  font-size:12px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--accent);margin-bottom:24px;font-weight:600;
+}
+.intro-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:72px;line-height:1;font-weight:500;
+  margin-bottom:20px;letter-spacing:-1px;
+}
+.intro-title em{color:var(--accent-bright);font-style:italic}
+.intro-sub{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;font-size:22px;
+  color:var(--text-secondary);margin-bottom:48px;font-weight:400;
+}
+.intro-card{
+  background:var(--bg-panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:32px;
+  box-shadow:var(--shadow-lg);
+  text-align:left;
+}
+.intro-card h3{
+  font-family:'Syne',sans-serif;
+  font-size:13px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--text-muted);margin-bottom:20px;font-weight:600;
+}
+.intro-steps{display:flex;flex-direction:column;gap:14px;margin-bottom:28px}
+.intro-step{
+  display:flex;align-items:flex-start;gap:16px;
+  padding:14px 16px;
+  background:var(--bg-elevated);
+  border-radius:var(--radius-md);
+  border:1px solid var(--border);
+}
+.intro-step-num{
+  width:28px;height:28px;flex-shrink:0;
+  border-radius:50%;
+  background:var(--accent-dim);color:var(--bg-deep);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:13px;
+}
+.intro-step-body{flex:1}
+.intro-step-title{font-weight:600;font-size:14px;margin-bottom:2px}
+.intro-step-desc{font-size:13px;color:var(--text-secondary);line-height:1.5}
+.form-row{display:flex;gap:12px;margin-bottom:16px}
+.form-input{
+  flex:1;
+  background:var(--bg-elevated);
+  border:1px solid var(--border-soft);
+  color:var(--text-primary);
+  padding:14px 16px;
+  border-radius:var(--radius-md);
+  font-family:inherit;font-size:15px;
+  transition:border-color .2s, box-shadow .2s;
+}
+.form-input:focus{
+  outline:none;
+  border-color:var(--accent);
+  box-shadow:var(--glow-accent);
+}
+.form-input::placeholder{color:var(--text-muted)}
+
+/* ---------- BUTTONS ---------- */
+.btn{
+  font-family:'Syne',sans-serif;
+  font-weight:600;font-size:14px;letter-spacing:1px;
+  padding:14px 28px;
+  border-radius:var(--radius-md);
+  border:none;cursor:pointer;
+  transition:transform .15s, box-shadow .15s, background .2s;
+  text-transform:uppercase;
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+}
+.btn-primary{
+  background:var(--accent);color:var(--bg-deep);
+}
+.btn-primary:hover{
+  background:var(--accent-bright);
+  transform:translateY(-1px);
+  box-shadow:var(--glow-accent);
+}
+.btn-primary:disabled{
+  background:var(--border);color:var(--text-muted);
+  cursor:not-allowed;transform:none;box-shadow:none;
+}
+.btn-ghost{
+  background:transparent;
+  color:var(--text-secondary);
+  border:1px solid var(--border-soft);
+}
+.btn-ghost:hover{
+  border-color:var(--accent);color:var(--accent-bright);
+}
+.btn-warm{
+  background:var(--warm);color:var(--bg-deep);
+}
+.btn-warm:hover{
+  background:var(--warm-bright);
+  box-shadow:var(--glow-warm);
+}
+
+/* ---------- LAMPO ---------- */
+#screen-lampo{align-items:center;justify-content:center;padding:24px}
+.lampo-countdown{
+  position:fixed;top:80px;left:50%;transform:translateX(-50%);
+  z-index:50;
+  background:var(--bg-modal);
+  border:2px solid var(--warm);
+  border-radius:var(--radius-lg);
+  padding:20px 40px;
+  box-shadow:var(--glow-warm);
+}
+.lampo-countdown-label{
+  font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--warm-bright);font-weight:700;text-align:center;
+  margin-bottom:6px;
+}
+.lampo-countdown-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:56px;line-height:1;font-weight:600;
+  color:var(--text-primary);text-align:center;
+  font-variant-numeric:tabular-nums;
+}
+.lampo-img{
+  max-width:95vw;max-height:75vh;
+  border-radius:var(--radius-md);
+  box-shadow:var(--shadow-lg);
+  display:block;
+}
+.lampo-hint{
+  position:fixed;bottom:32px;left:50%;transform:translateX(-50%);
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:18px;color:var(--text-secondary);
+  text-align:center;max-width:640px;
+}
+
+/* ---------- RECALL ---------- */
+#screen-recall{padding:48px 24px;justify-content:center;align-items:center}
+.recall-wrap{max-width:760px;width:100%}
+.recall-kicker{
+  font-size:12px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--warm);margin-bottom:16px;font-weight:600;text-align:center;
+}
+.recall-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:44px;font-weight:500;text-align:center;
+  margin-bottom:12px;line-height:1.1;
+}
+.recall-sub{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:19px;color:var(--text-secondary);
+  text-align:center;margin-bottom:40px;
+}
+.recall-inputs{
+  display:flex;flex-direction:column;gap:12px;
+  background:var(--bg-panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:28px;
+  box-shadow:var(--shadow-md);
+}
+.recall-row{
+  display:flex;align-items:center;gap:14px;
+}
+.recall-num{
+  font-family:'Cormorant Garamond',serif;
+  width:36px;height:36px;flex-shrink:0;
+  border-radius:50%;
+  background:var(--bg-elevated);
+  border:1px solid var(--border-soft);
+  color:var(--accent-bright);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:600;font-size:18px;
+}
+.recall-input{
+  flex:1;
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  color:var(--text-primary);
+  padding:12px 16px;
+  border-radius:var(--radius-md);
+  font-family:inherit;font-size:15px;
+}
+.recall-input:focus{outline:none;border-color:var(--accent);box-shadow:var(--glow-accent)}
+.recall-foot{margin-top:24px;display:flex;justify-content:space-between;align-items:center}
+.recall-counter{font-size:13px;color:var(--text-muted)}
+
+/* ---------- CARTOGRAFIA ---------- */
+#screen-cartografia{padding:0}
+.carto-layout{
+  display:grid;
+  grid-template-columns:1fr 320px;
+  gap:0;
+  flex:1;
+  min-height:calc(100vh - 56px);
+}
+.carto-main{
+  padding:24px;
+  display:flex;flex-direction:column;
+  gap:16px;
+  overflow:hidden;
+}
+.carto-header{display:flex;justify-content:space-between;align-items:center}
+.carto-title-block h2{
+  font-family:'Cormorant Garamond',serif;
+  font-size:32px;font-weight:500;line-height:1;
+}
+.carto-title-block p{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  color:var(--text-secondary);font-size:16px;margin-top:4px;
+}
+.carto-img-wrap{
+  position:relative;
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  box-shadow:var(--shadow-lg);
+  background:var(--bg-deep);
+  border:1px solid var(--border);
+  width:100%;
+}
+.carto-img{width:100%;height:auto;display:block;user-select:none;-webkit-user-drag:none}
+.hotspot{
+  position:absolute;
+  cursor:pointer;
+  border-radius:50%;
+  transition:background .3s;
+}
+.hotspot:hover{
+  background:rgba(134,239,172,.12);
+  box-shadow:0 0 40px rgba(134,239,172,.25) inset;
+}
+.hotspot.solved{
+  cursor:default;
+  background:rgba(74,222,128,.06);
+  box-shadow:0 0 0 2px rgba(74,222,128,.35) inset;
+}
+.hotspot.solved::after{
+  content:'';
+  position:absolute;inset:50% 50%;
+  width:14px;height:14px;margin:-7px 0 0 -7px;
+  border-radius:50%;
+  background:var(--accent);
+  box-shadow:var(--glow-accent);
+}
+.hotspot.pulse::before{
+  content:'';
+  position:absolute;inset:0;
+  border-radius:50%;
+  border:2px solid var(--warm);
+  animation:pulseRing 1.8s ease-out infinite;
+}
+@keyframes pulseRing{
+  0%{transform:scale(.9);opacity:.9}
+  100%{transform:scale(1.35);opacity:0}
+}
+
+/* ---------- SIDE PANEL ---------- */
+.carto-side{
+  background:var(--bg-panel);
+  border-left:1px solid var(--border);
+  padding:24px 20px;
+  display:flex;flex-direction:column;
+  gap:16px;
+  overflow-y:auto;
+  max-height:calc(100vh - 56px);
+  position:sticky;top:56px;
+}
+.side-block{
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:16px;
+}
+.side-block-label{
+  font-size:11px;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--text-muted);font-weight:600;margin-bottom:10px;
+}
+.side-stats{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+}
+.side-stat{
+  background:var(--bg-panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:10px 12px;text-align:center;
+}
+.side-stat-val{
+  font-family:'Cormorant Garamond',serif;
+  font-size:30px;font-weight:600;
+  color:var(--accent-bright);line-height:1;
+}
+.side-stat-lbl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-top:4px}
+.side-fragments{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+}
+.frag-slot{
+  aspect-ratio:1;
+  background:var(--bg-panel);
+  border:1px dashed var(--border-soft);
+  border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;
+  font-size:13px;color:var(--text-muted);font-weight:500;
+}
+.frag-slot.filled{
+  background:var(--bg-deep);
+  border:1px solid var(--accent);
+  color:var(--accent-bright);
+  box-shadow:var(--glow-accent);
+  font-weight:600;
+  font-size:14px;
+  letter-spacing:.5px;
+}
+.side-hint{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:14px;color:var(--text-secondary);
+  line-height:1.5;
+}
+.side-actions{display:flex;flex-direction:column;gap:10px}
+.btn-sm{padding:10px 18px;font-size:12px}
+
+/* ---------- MODAL ---------- */
+.modal-backdrop{
+  position:fixed;inset:0;
+  background:rgba(0,10,6,.75);
+  backdrop-filter:blur(6px);
+  z-index:200;
+  display:none;align-items:center;justify-content:center;
+  padding:24px;
+  animation:fadeIn .25s ease;
+}
+.modal-backdrop.active{display:flex}
+.modal{
+  background:var(--bg-modal);
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius-lg);
+  max-width:640px;width:100%;
+  max-height:90vh;overflow-y:auto;
+  box-shadow:var(--shadow-lg);
+  animation:popIn .35s cubic-bezier(.16,1,.3,1);
+}
+@keyframes popIn{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+.modal-head{
+  padding:24px 28px 16px;
+  border-bottom:1px solid var(--border);
+}
+.modal-kicker{
+  font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--accent);font-weight:700;margin-bottom:8px;
+}
+.modal-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:32px;font-weight:500;line-height:1.1;
+}
+.modal-body{padding:24px 28px}
+.q-block{margin-bottom:20px}
+.q-block:last-child{margin-bottom:0}
+.q-label{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:18px;color:var(--text-primary);
+  margin-bottom:10px;line-height:1.35;
+}
+.q-textarea{
+  width:100%;
+  background:var(--bg-elevated);
+  border:1px solid var(--border-soft);
+  color:var(--text-primary);
+  padding:12px 14px;
+  border-radius:var(--radius-md);
+  font-family:inherit;font-size:14px;line-height:1.5;
+  resize:vertical;min-height:68px;
+}
+.q-textarea:focus{outline:none;border-color:var(--accent);box-shadow:var(--glow-accent)}
+.q-foot{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:12px}
+.q-count{color:var(--text-muted)}
+.q-count.ok{color:var(--accent-bright)}
+.modal-foot{
+  padding:16px 28px 24px;
+  border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:12px;
+}
+.modal-note{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:13px;color:var(--text-muted);max-width:320px;line-height:1.4;
+}
+
+/* ---------- FRAGMENT REVEAL ---------- */
+.reveal-modal{
+  background:linear-gradient(145deg,var(--bg-modal) 0%,var(--bg-elevated) 100%);
+  border:2px solid var(--accent);
+  box-shadow:0 0 60px rgba(74,222,128,.35);
+  text-align:center;padding:48px 32px;
+}
+.reveal-kicker{
+  font-size:12px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--accent-bright);font-weight:700;margin-bottom:20px;
+}
+.reveal-fragment{
+  font-family:'Cormorant Garamond',serif;
+  font-size:72px;font-weight:600;
+  color:var(--warm-bright);
+  letter-spacing:2px;
+  text-shadow:0 0 40px rgba(251,191,36,.6);
+  margin:12px 0 32px;
+  line-height:1;
+}
+.reveal-insight{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:20px;color:var(--text-secondary);
+  max-width:480px;margin:0 auto 28px;line-height:1.45;
+}
+
+/* ---------- FRASE ASSEMBLY ---------- */
+#screen-frase{padding:48px 24px;align-items:center;justify-content:center}
+.frase-wrap{max-width:1000px;width:100%}
+.frase-kicker{
+  font-size:12px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--warm);margin-bottom:16px;font-weight:600;text-align:center;
+}
+.frase-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:44px;font-weight:500;text-align:center;
+  margin-bottom:12px;line-height:1.1;
+}
+.frase-sub{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:19px;color:var(--text-secondary);
+  text-align:center;margin-bottom:40px;max-width:640px;margin-left:auto;margin-right:auto;
+}
+.frase-slots{
+  display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+  background:var(--bg-panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:28px;min-height:120px;
+  margin-bottom:24px;
+  box-shadow:var(--shadow-md);
+}
+.frase-slot{
+  min-width:90px;height:64px;
+  border:2px dashed var(--border-soft);
+  border-radius:var(--radius-md);
+  display:flex;align-items:center;justify-content:center;
+  padding:0 18px;
+  font-family:'Cormorant Garamond',serif;
+  font-size:26px;font-weight:500;
+  color:var(--text-muted);
+  transition:all .2s;
+}
+.frase-slot.drag-over{
+  border-color:var(--accent);
+  background:rgba(74,222,128,.08);
+}
+.frase-slot.filled{
+  border-style:solid;
+  border-color:var(--accent);
+  color:var(--text-primary);
+  background:var(--bg-elevated);
+}
+.frase-slot.filled.wrong{
+  border-color:var(--amber-soft);
+  color:var(--warm-bright);
+  background:rgba(251,146,60,.08);
+}
+.frase-slot.filled.right{
+  border-color:var(--accent-bright);
+  color:var(--accent-bright);
+  box-shadow:var(--glow-accent);
+}
+.frase-bank{
+  display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+  margin-bottom:32px;
+}
+.frase-chip{
+  padding:14px 22px;
+  background:var(--bg-elevated);
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius-md);
+  font-family:'Cormorant Garamond',serif;
+  font-size:24px;font-weight:500;
+  color:var(--accent-bright);
+  cursor:grab;
+  user-select:none;
+  transition:all .15s;
+}
+.frase-chip:hover{
+  border-color:var(--accent);
+  transform:translateY(-2px);
+  box-shadow:var(--glow-accent);
+}
+.frase-chip.dragging{opacity:.4;cursor:grabbing}
+.frase-chip.used{visibility:hidden}
+.frase-actions{text-align:center;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+
+/* ---------- DEBRIEF ---------- */
+#screen-debrief{padding:48px 24px;align-items:center}
+.debrief-wrap{max-width:920px;width:100%}
+.debrief-kicker{
+  font-size:12px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--warm);margin-bottom:16px;font-weight:600;text-align:center;
+}
+.debrief-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:52px;font-weight:500;text-align:center;
+  margin-bottom:12px;line-height:1.05;
+}
+.debrief-phrase{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:28px;color:var(--accent-bright);
+  text-align:center;margin:24px 0 48px;
+  padding:28px;
+  background:var(--bg-panel);
+  border:1px solid var(--accent);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--glow-accent);
+  line-height:1.3;
+  letter-spacing:1px;
+}
+.debrief-section{
+  background:var(--bg-panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:28px;
+  margin-bottom:20px;
+  box-shadow:var(--shadow-md);
+}
+.debrief-section h3{
+  font-family:'Cormorant Garamond',serif;
+  font-size:26px;font-weight:500;
+  margin-bottom:6px;
+}
+.debrief-section p{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  color:var(--text-secondary);margin-bottom:20px;font-size:16px;
+}
+.debrief-compare{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.debrief-col h4{
+  font-size:11px;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--text-muted);margin-bottom:12px;font-weight:700;
+}
+.debrief-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.debrief-list li{
+  padding:10px 14px;
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  font-size:14px;
+  display:flex;align-items:flex-start;gap:10px;
+}
+.debrief-list li .tag{
+  flex-shrink:0;
+  font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  padding:2px 8px;border-radius:999px;font-weight:700;
+  margin-top:2px;
+}
+.debrief-list li .tag.warm{background:var(--warm);color:var(--bg-deep)}
+.debrief-list li .tag.cold{background:var(--bg-deep);color:var(--text-muted);border:1px solid var(--border)}
+
+.debrief-zones{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.debrief-zone{
+  padding:14px 16px;
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+}
+.debrief-zone-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:6px;
+}
+.debrief-zone-name{font-weight:600;font-size:13px;letter-spacing:.5px}
+.debrief-zone-frag{
+  font-family:'Cormorant Garamond',serif;
+  color:var(--warm-bright);font-weight:600;font-size:18px;
+}
+.debrief-zone-insight{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:14px;color:var(--text-secondary);line-height:1.4;
+}
+.debrief-final{
+  text-align:center;padding:40px 28px;
+  background:linear-gradient(160deg,var(--bg-panel) 0%,var(--bg-elevated) 100%);
+  border:1px solid var(--warm);
+  border-radius:var(--radius-lg);
+  margin-top:24px;
+}
+.debrief-final-label{
+  font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--warm-bright);font-weight:700;margin-bottom:14px;
+}
+.debrief-final-text{
+  font-family:'Cormorant Garamond',serif;
+  font-size:26px;line-height:1.35;font-weight:400;font-style:italic;
+  max-width:640px;margin:0 auto 24px;
+}
+
+.debrief-actions{
+  display:flex;gap:12px;justify-content:center;margin-top:28px;flex-wrap:wrap;
+}
+
+/* ---------- UTIL ---------- */
+.hidden{display:none!important}
+.flex-spacer{flex:1}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:var(--bg-deep)}
+::-webkit-scrollbar-thumb{background:var(--border-soft);border-radius:5px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent-dim)}
+
+@media (max-width: 1100px){
+  .carto-layout{grid-template-columns:1fr}
+  .carto-side{position:static;max-height:none;border-left:none;border-top:1px solid var(--border)}
+  .side-fragments{grid-template-columns:repeat(8,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="14" cy="14" r="12" stroke="#4ade80" stroke-width="1.5" fill="none"/>
+        <circle cx="14" cy="14" r="5" fill="#4ade80"/>
+        <circle cx="14" cy="14" r="2" fill="#071912"/>
+      </svg>
+    </div>
+    <div class="topbar-title">Guarda <em>Due Volte</em></div>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-badge" id="user-badge" style="display:none">
+      <div class="dot"></div>
+      <span id="user-badge-text">—</span>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- ==================== SCREEN: INTRO ==================== -->
+  <section class="screen active" id="screen-intro">
+    <div class="intro-wrap">
+      <div class="intro-kicker">Laboratorio di lettura lenta</div>
+      <h1 class="intro-title">Guarda <em>due volte</em></h1>
+      <p class="intro-sub">Un'immagine sola. Otto zone nascoste. Una frase da ricomporre.</p>
+
+      <div class="intro-card">
+        <h3>Come funziona</h3>
+        <div class="intro-steps">
+          <div class="intro-step">
+            <div class="intro-step-num">1</div>
+            <div class="intro-step-body">
+              <div class="intro-step-title">Lampo — 30 secondi</div>
+              <div class="intro-step-desc">Vedi l'immagine una volta, velocemente. Come uno scroll.</div>
+            </div>
+          </div>
+          <div class="intro-step">
+            <div class="intro-step-num">2</div>
+            <div class="intro-step-body">
+              <div class="intro-step-title">Memoria rapida</div>
+              <div class="intro-step-desc">Scrivi cinque cose che hai visto. Senza pensarci troppo.</div>
+            </div>
+          </div>
+          <div class="intro-step">
+            <div class="intro-step-num">3</div>
+            <div class="intro-step-body">
+              <div class="intro-step-title">Cartografia</div>
+              <div class="intro-step-desc">Torna sull'immagine. Trova le otto zone nascoste e rispondi alle domande. Ogni zona ti dà un frammento.</div>
+            </div>
+          </div>
+          <div class="intro-step">
+            <div class="intro-step-num">4</div>
+            <div class="intro-step-body">
+              <div class="intro-step-title">La frase</div>
+              <div class="intro-step-desc">Ricomponi gli otto frammenti. L'immagine dice qualcosa, ma non lo dice ad alta voce.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <input type="text" id="input-nome" class="form-input" placeholder="Il tuo nome" autocomplete="off">
+          <input type="text" id="input-classe" class="form-input" placeholder="Classe (es. 2B)" autocomplete="off" style="max-width:140px">
+        </div>
+        <button class="btn btn-primary" id="btn-start" style="width:100%" disabled>Entra nel laboratorio</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SCREEN: LAMPO ==================== -->
+  <section class="screen" id="screen-lampo">
+    <div class="lampo-countdown">
+      <div class="lampo-countdown-label">Guarda adesso</div>
+      <div class="lampo-countdown-num" id="lampo-num">30</div>
+    </div>
+    <img src="cittadinanza.jpg" alt="Immagine della città digitale con scalatori in cordata" class="lampo-img" id="lampo-img">
+    <div class="lampo-hint">Lascia che l'occhio scorra. Non studiare. Guarda e basta.</div>
+  </section>
+
+  <!-- ==================== SCREEN: RECALL ==================== -->
+  <section class="screen" id="screen-recall">
+    <div class="recall-wrap">
+      <div class="recall-kicker">Memoria rapida</div>
+      <h2 class="recall-title">Cosa hai visto?</h2>
+      <p class="recall-sub">Cinque cose. Quelle che ti sono rimaste in testa. Senza tornare indietro a controllare.</p>
+
+      <div class="recall-inputs">
+        <div class="recall-row"><div class="recall-num">1</div><input type="text" class="recall-input" data-idx="0" placeholder="Ho visto..."></div>
+        <div class="recall-row"><div class="recall-num">2</div><input type="text" class="recall-input" data-idx="1" placeholder="Ho visto..."></div>
+        <div class="recall-row"><div class="recall-num">3</div><input type="text" class="recall-input" data-idx="2" placeholder="Ho visto..."></div>
+        <div class="recall-row"><div class="recall-num">4</div><input type="text" class="recall-input" data-idx="3" placeholder="Ho visto..."></div>
+        <div class="recall-row"><div class="recall-num">5</div><input type="text" class="recall-input" data-idx="4" placeholder="Ho visto..."></div>
+
+        <div class="recall-foot">
+          <div class="recall-counter" id="recall-counter">0 di 5 compilate</div>
+          <button class="btn btn-primary" id="btn-recall-next" disabled>Vai alla cartografia</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SCREEN: CARTOGRAFIA ==================== -->
+  <section class="screen" id="screen-cartografia">
+    <div class="carto-layout">
+      <div class="carto-main">
+        <div class="carto-header">
+          <div class="carto-title-block">
+            <h2>Cartografia</h2>
+            <p>Trova le otto zone. Clicca sull'immagine dove senti che c'è qualcosa.</p>
+          </div>
+          <div id="carto-progress" style="font-size:13px;color:var(--text-secondary);text-align:right">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--accent-bright);line-height:1" id="carto-progress-num">0 / 8</div>
+            <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-top:4px">Zone scoperte</div>
+          </div>
+        </div>
+
+        <div class="carto-img-wrap" id="carto-img-wrap">
+          <img src="cittadinanza.jpg" alt="Immagine della città digitale" class="carto-img" id="carto-img">
+          <!-- hotspots inseriti via JS -->
+        </div>
+      </div>
+
+      <aside class="carto-side">
+        <div class="side-block">
+          <div class="side-block-label">Tasca del cartografo</div>
+          <div class="side-fragments" id="side-fragments">
+            <!-- generati via JS -->
+          </div>
+        </div>
+
+        <div class="side-block">
+          <div class="side-block-label">Avanzamento</div>
+          <div class="side-stats">
+            <div class="side-stat">
+              <div class="side-stat-val" id="stat-zones">0</div>
+              <div class="side-stat-lbl">Zone</div>
+            </div>
+            <div class="side-stat">
+              <div class="side-stat-val" id="stat-time">0'</div>
+              <div class="side-stat-lbl">Tempo</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="side-block">
+          <div class="side-block-label">Promemoria</div>
+          <div class="side-hint">
+            Non c'è fretta. Le zone non hanno un ordine. Se passa del tempo e non trovi nulla, l'immagine ti darà un piccolo segno.
+          </div>
+        </div>
+
+        <div class="side-actions">
+          <button class="btn btn-warm btn-sm" id="btn-to-frase" disabled>Ricomponi la frase</button>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ==================== MODAL ZONA ==================== -->
+  <div class="modal-backdrop" id="zone-modal">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-kicker" id="zone-kicker">Zona</div>
+        <div class="modal-title" id="zone-title">—</div>
+      </div>
+      <div class="modal-body" id="zone-body">
+        <!-- domande via JS -->
+      </div>
+      <div class="modal-foot">
+        <div class="modal-note" id="zone-note">Scrivi in modo pieno. Ogni risposta deve essere almeno una frase compiuta.</div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-ghost btn-sm" id="btn-zone-close">Chiudi</button>
+          <button class="btn btn-primary btn-sm" id="btn-zone-submit" disabled>Ricevi il frammento</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL REVEAL ==================== -->
+  <div class="modal-backdrop" id="reveal-modal">
+    <div class="modal reveal-modal">
+      <div class="reveal-kicker">Frammento sbloccato</div>
+      <div class="reveal-fragment" id="reveal-fragment">—</div>
+      <div class="reveal-insight" id="reveal-insight">—</div>
+      <button class="btn btn-primary" id="btn-reveal-close">Torna all'immagine</button>
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN: FRASE ==================== -->
+  <section class="screen" id="screen-frase">
+    <div class="frase-wrap">
+      <div class="frase-kicker">Il messaggio nascosto</div>
+      <h2 class="frase-title">L'immagine lo dice, ma non lo dice</h2>
+      <p class="frase-sub">Ordina gli otto frammenti. Trascinali negli spazi vuoti per comporre la frase che hai costruito camminando dentro l'immagine.</p>
+
+      <div class="frase-slots" id="frase-slots">
+        <!-- via JS -->
+      </div>
+
+      <div class="frase-bank" id="frase-bank">
+        <!-- via JS -->
+      </div>
+
+      <div class="frase-actions">
+        <button class="btn btn-ghost" id="btn-frase-reset">Rimescola</button>
+        <button class="btn btn-primary" id="btn-frase-check" disabled>Verifica la frase</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SCREEN: DEBRIEF ==================== -->
+  <section class="screen" id="screen-debrief">
+    <div class="debrief-wrap">
+      <div class="debrief-kicker">Debrief — il vero punto</div>
+      <h2 class="debrief-title">Quello che non avevi visto<br>al primo sguardo</h2>
+
+      <div class="debrief-phrase" id="debrief-phrase">—</div>
+
+      <div class="debrief-section">
+        <h3>Confronto</h3>
+        <p>A sinistra, le cinque cose che avevi colto nei primi 30 secondi. A destra, i temi che hai tirato fuori guardando davvero. Quanti erano già lì prima?</p>
+        <div class="debrief-compare">
+          <div class="debrief-col">
+            <h4>Sguardo veloce (30s)</h4>
+            <ul class="debrief-list" id="debrief-recall"></ul>
+          </div>
+          <div class="debrief-col">
+            <h4>Sguardo lento (cartografia)</h4>
+            <ul class="debrief-list" id="debrief-slow"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="debrief-section">
+        <h3>Le otto zone, rilette insieme</h3>
+        <p>Ogni zona era un dettaglio concreto. Tutte insieme parlano di qualcosa di più grande che non è scritto da nessuna parte nell'immagine.</p>
+        <div class="debrief-zones" id="debrief-zones"></div>
+      </div>
+
+      <div class="debrief-final">
+        <div class="debrief-final-label">Il punto del metodo</div>
+        <div class="debrief-final-text">
+          Un'immagine non finisce quando smetti di guardarla.<br>
+          Finisce quando smetti di farle domande.
+        </div>
+        <div class="debrief-actions">
+          <button class="btn btn-ghost" id="btn-export">Scarica il mio foglio</button>
+          <button class="btn btn-primary" id="btn-restart">Ricomincia</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ================================================================
+   GUARDA DUE VOLTE — state, data, flow
+   ================================================================ */
+
+// -------- DATI DELLE 8 ZONE --------
+// Coordinate in % rispetto all'immagine (x, y, width, height)
+// Ogni zona ha domande progressive: descrittiva → interpretativa → meta
+// Frammento = parola della frase target
+// Keywords = almeno una deve comparire nell'insieme delle risposte
+const ZONES = [
+  {
+    id:'cielo',
+    name:'Il cielo di numeri',
+    coords:{x:3,y:3,w:18,h:14},
+    fragment:'NON',
+    order:0,
+    questions:[
+      'Cosa vedi scritto nel cielo sopra la città?',
+      'Perché l\'autore ha disegnato un cielo fatto di numeri, e non di stelle o di nuvole normali?',
+      'Chi scrive quel cielo? E quando sei dentro una città così, lo stai guardando tu, o lui sta leggendo te?'
+    ],
+    keywords:['numer','codic','binar','cifr','scritt','uno','zero','0','1'],
+    insight:'Il cielo digitale non è neutro: è scritto da qualcuno. Essere cittadini digitali significa sapere che l\'ambiente in cui ti muovi ti sta anche leggendo.',
+    theme:'Ambiente digitale — non è sfondo, è contesto attivo.'
+  },
+  {
+    id:'satelliti',
+    name:'Gli oggetti nel cielo',
+    coords:{x:28,y:6,w:18,h:18},
+    fragment:'SI',
+    order:1,
+    questions:[
+      'Guarda il cielo: oltre alle nuvole, cosa vola?',
+      'Sono oggetti di chi? E stanno facendo cosa esattamente?',
+      'Tu li stai guardando, o loro stanno guardando te? Da cosa lo capisci?'
+    ],
+    keywords:['satell','dron','aere','volan','guard','osserv','sorveglia','spia','monitor'],
+    insight:'Ciò che vola sopra di te non è paesaggio: è uno sguardo. La cittadinanza digitale comincia quando capisci di non essere mai davvero "solo" quando sei online.',
+    theme:'Sorveglianza e tracciamento — lo sguardo che non si vede.'
+  },
+  {
+    id:'libro',
+    name:'La luce in cima',
+    coords:{x:85,y:4,w:13,h:22},
+    fragment:'ARRIVA',
+    order:2,
+    questions:[
+      'In tutta l\'immagine quanti colori caldi (gialli, arancioni) ci sono? Dove si trovano?',
+      'La figura più in alto tiene in mano un oggetto che brilla. Cosa pensi che sia?',
+      'Quella figura sta comandando gli altri, o sta illuminando la strada? Da cosa si capisce?'
+    ],
+    keywords:['libr','luce','arancio','giallo','illumin','guida','tablet','brilla','sapere','conosc','calda'],
+    insight:'In un mondo fatto di schermi freddi, la conoscenza è l\'unica luce calda. Non è un privilegio: è lo strumento con cui si apre il passaggio a chi sta sotto.',
+    theme:'La conoscenza come luce — non potere, ma apertura.'
+  },
+  {
+    id:'corda',
+    name:'La corda che li tiene',
+    coords:{x:62,y:32,w:22,h:30},
+    fragment:'IN',
+    order:3,
+    questions:[
+      'Quanti scalatori stanno salendo? Come sono messi uno rispetto all\'altro?',
+      'Guarda bene la corda: è una sola che li tiene tutti, oppure sono tante separate?',
+      'Cosa succederebbe adesso se uno dei primi scivolasse all\'indietro?'
+    ],
+    keywords:['corda','lega','insieme','cooperaz','aiut','cade','cadrebbe','scivol','trattien','caten','sei','cinque','sette'],
+    insight:'Sei persone, una corda sola. Chi è davanti ha il peso di chi è dietro; chi è dietro ha la direzione di chi è davanti. Online funziona uguale, anche se non lo vedi.',
+    theme:'Interdipendenza positiva — la sicurezza di uno dipende dall\'attenzione di tutti.'
+  },
+  {
+    id:'zaini',
+    name:'Quello che portano addosso',
+    coords:{x:55,y:42,w:10,h:14},
+    fragment:'MAI',
+    order:4,
+    questions:[
+      'Gli scalatori hanno tutti qualcosa addosso. Cosa?',
+      'Se stai salendo su una parete difficile, lo zaino è d\'intralcio o è essenziale?',
+      'Se tu dovessi partire adesso per quella salita, quali tre cose metteresti dentro il tuo zaino? E chi te le ha date?'
+    ],
+    keywords:['zain','port','bagagli','dentro','metter','roba','cose','essenzial','spall'],
+    insight:'Lo zaino sei tu: le cose che porti addosso sempre, anche online. Ricordi, foto, messaggi, chi ti ha insegnato cosa. Non si svuota, si riconosce.',
+    theme:'Identità come bagaglio — ciò che ti segue ovunque nella rete.'
+  },
+  {
+    id:'social',
+    name:'Le rocce coi nomi',
+    coords:{x:85,y:60,w:13,h:25},
+    fragment:'SOLI',
+    order:5,
+    questions:[
+      'Quali loghi riesci a riconoscere disegnati come rocce?',
+      'Perché l\'autore ha messo quei loghi come fondamenta di roccia, e non in alto come bandiere?',
+      'Se i social sono il terreno da cui si parte, cosa vuol dire per te che li usi ogni giorno? Ti ci appoggi o ti ci inciampi?'
+    ],
+    keywords:['social','insta','facebook','tiktok','twitter','linked','logo','roccia','fondament','piedi','base','sotto','terreno'],
+    insight:'I social non sono il traguardo, sono il terreno. Un terreno può reggere un passo pesante o cedere. Dipende da come lo conosci prima di camminarci sopra.',
+    theme:'I social come suolo — fondamento da conoscere, non cima da raggiungere.'
+  },
+  {
+    id:'griglia',
+    name:'Le persone sulla griglia',
+    coords:{x:2,y:72,w:18,h:24},
+    fragment:'DA',
+    order:6,
+    questions:[
+      'In basso a sinistra ci sono delle figure molto più piccole. Quante ne vedi? Cosa stanno facendo?',
+      'Si stanno parlando tra loro, o ognuna sta guardando il proprio schermo?',
+      'Perché sono piccole e gli scalatori sono grandi? Sono all\'inizio del percorso o sono rimaste indietro?'
+    ],
+    keywords:['sol','isolat','piccol','grigli','lontan','indietr','schermo','telefon','ferm','separ','distant','soli'],
+    insight:'Essere connessi a tutti e non parlare con nessuno. È il paradosso più comune della tua generazione: la griglia ti tiene su, ma non ti tira su.',
+    theme:'Solitudine connessa — il contrario della cordata.'
+  },
+  {
+    id:'bussola',
+    name:'La piccola rosa dei venti',
+    coords:{x:95,y:88,w:5,h:11},
+    fragment:'CIMA',
+    order:7,
+    questions:[
+      'In basso a destra c\'è un simbolo piccolissimo, quasi nascosto. Riesci a vederlo? Cos\'è?',
+      'A cosa serve una bussola dentro una città piena di strade e di cartelli luminosi?',
+      'Quando le strade davanti a te sono troppe e ti confondono, tu a cosa ti orienti davvero?'
+    ],
+    keywords:['bussol','rosa','orient','direzion','nord','vento','punti','cardinal','stell'],
+    insight:'In una città piena di cartelli, la bussola è l\'unica cosa che non te la dicono gli altri. È il tuo criterio interno: senza quello, ogni strada sembra giusta.',
+    theme:'Orientamento interno — il criterio personale in mezzo al rumore.'
+  }
+];
+
+const TARGET_PHRASE = ['NON','SI','ARRIVA','MAI','IN','CIMA','DA','SOLI'];
+
+// -------- STATE --------
+const state = {
+  user:{nome:'',classe:''},
+  recall:['','','','',''],
+  zones:{},      // zone.id -> { solved:true/false, answers:['','',''] }
+  composed:[],   // parole nell'ordine messo dallo studente
+  startTime:null,
+  lastActivity:null,
+  currentZone:null,
+};
+
+ZONES.forEach(z => state.zones[z.id] = { solved:false, answers:new Array(z.questions.length).fill('') });
+
+// -------- UTIL --------
+function $(sel){return document.querySelector(sel)}
+function $$(sel){return Array.from(document.querySelectorAll(sel))}
+function showScreen(id){
+  $$('.screen').forEach(s=>s.classList.remove('active'));
+  $('#'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function saveState(){
+  try{localStorage.setItem('guarda-due-volte-v1', JSON.stringify(state))}catch(e){}
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem('guarda-due-volte-v1');
+    if(!raw) return false;
+    const loaded = JSON.parse(raw);
+    Object.assign(state, loaded);
+    // ripristina zone correttamente
+    ZONES.forEach(z => {
+      if(!state.zones[z.id]) state.zones[z.id] = {solved:false,answers:new Array(z.questions.length).fill('')};
+    });
+    return true;
+  }catch(e){return false}
+}
+
+// -------- INTRO --------
+const inputNome = $('#input-nome');
+const inputClasse = $('#input-classe');
+const btnStart = $('#btn-start');
+
+function checkIntroForm(){
+  const ok = inputNome.value.trim().length >= 2 && inputClasse.value.trim().length >= 1;
+  btnStart.disabled = !ok;
+}
+inputNome.addEventListener('input', checkIntroForm);
+inputClasse.addEventListener('input', checkIntroForm);
+
+btnStart.addEventListener('click', () => {
+  state.user.nome = inputNome.value.trim();
+  state.user.classe = inputClasse.value.trim();
+  state.startTime = Date.now();
+  updateUserBadge();
+  saveState();
+  startLampo();
+});
+
+function updateUserBadge(){
+  if(state.user.nome){
+    $('#user-badge').style.display = 'flex';
+    $('#user-badge-text').textContent = state.user.nome + ' · ' + state.user.classe;
+  }
+}
+
+// -------- LAMPO (30s) --------
+let lampoTimer = null;
+function startLampo(){
+  showScreen('screen-lampo');
+  let remaining = 30;
+  $('#lampo-num').textContent = remaining;
+  lampoTimer = setInterval(() => {
+    remaining--;
+    $('#lampo-num').textContent = remaining;
+    if(remaining <= 0){
+      clearInterval(lampoTimer);
+      startRecall();
+    }
+  }, 1000);
+}
+
+// -------- RECALL --------
+const recallInputs = $$('.recall-input');
+const recallCounter = $('#recall-counter');
+const btnRecallNext = $('#btn-recall-next');
+
+recallInputs.forEach(inp => {
+  inp.addEventListener('input', () => {
+    state.recall[parseInt(inp.dataset.idx)] = inp.value.trim();
+    const filled = state.recall.filter(r => r.length >= 3).length;
+    recallCounter.textContent = filled + ' di 5 compilate';
+    btnRecallNext.disabled = filled < 5;
+    saveState();
+  });
+});
+
+btnRecallNext.addEventListener('click', startCartografia);
+
+function startRecall(){
+  showScreen('screen-recall');
+  recallInputs[0].focus();
+}
+
+// -------- CARTOGRAFIA --------
+let hintTimer = null;
+
+function startCartografia(){
+  showScreen('screen-cartografia');
+  renderHotspots();
+  renderSideFragments();
+  updateCartoProgress();
+  startTimer();
+  resetHintTimer();
+}
+
+function renderHotspots(){
+  const wrap = $('#carto-img-wrap');
+  // rimuovi eventuali esistenti
+  wrap.querySelectorAll('.hotspot').forEach(h => h.remove());
+  ZONES.forEach(z => {
+    const el = document.createElement('div');
+    el.className = 'hotspot';
+    el.dataset.zoneId = z.id;
+    el.style.left = z.coords.x + '%';
+    el.style.top = z.coords.y + '%';
+    el.style.width = z.coords.w + '%';
+    el.style.height = z.coords.h + '%';
+    if(state.zones[z.id].solved) el.classList.add('solved');
+    el.addEventListener('click', () => openZone(z.id));
+    wrap.appendChild(el);
+  });
+}
+
+function renderSideFragments(){
+  const container = $('#side-fragments');
+  container.innerHTML = '';
+  ZONES.forEach(z => {
+    const slot = document.createElement('div');
+    slot.className = 'frag-slot' + (state.zones[z.id].solved ? ' filled' : '');
+    slot.textContent = state.zones[z.id].solved ? z.fragment : '—';
+    slot.title = z.name;
+    container.appendChild(slot);
+  });
+}
+
+function updateCartoProgress(){
+  const solved = Object.values(state.zones).filter(z => z.solved).length;
+  $('#carto-progress-num').textContent = solved + ' / 8';
+  $('#stat-zones').textContent = solved;
+  $('#btn-to-frase').disabled = solved < 8;
+}
+
+function startTimer(){
+  setInterval(() => {
+    if(!state.startTime) return;
+    const mins = Math.floor((Date.now() - state.startTime)/60000);
+    $('#stat-time').textContent = mins + "'";
+  }, 10000);
+}
+
+function resetHintTimer(){
+  if(hintTimer) clearTimeout(hintTimer);
+  // rimuovi pulsazioni precedenti
+  $$('.hotspot.pulse').forEach(h => h.classList.remove('pulse'));
+  hintTimer = setTimeout(() => {
+    // trova prima zona non risolta nell'ordine di ZONES
+    const next = ZONES.find(z => !state.zones[z.id].solved);
+    if(next){
+      const el = document.querySelector(`.hotspot[data-zone-id="${next.id}"]`);
+      if(el) el.classList.add('pulse');
+    }
+  }, 90000);
+}
+
+// -------- ZONE MODAL --------
+const zoneModal = $('#zone-modal');
+const zoneBody = $('#zone-body');
+const btnZoneSubmit = $('#btn-zone-submit');
+const btnZoneClose = $('#btn-zone-close');
+
+function openZone(zoneId){
+  const zone = ZONES.find(z => z.id === zoneId);
+  if(!zone) return;
+  if(state.zones[zoneId].solved){
+    // già risolta — mostra insight
+    showRevealModal(zone, true);
+    return;
+  }
+  state.currentZone = zoneId;
+  $('#zone-kicker').textContent = 'Zona ' + (zone.order + 1) + ' di 8';
+  $('#zone-title').textContent = zone.name;
+  zoneBody.innerHTML = '';
+  zone.questions.forEach((q, i) => {
+    const block = document.createElement('div');
+    block.className = 'q-block';
+    block.innerHTML = `
+      <div class="q-label">${q}</div>
+      <textarea class="q-textarea" data-q-idx="${i}" placeholder="La tua risposta...">${state.zones[zoneId].answers[i] || ''}</textarea>
+      <div class="q-foot">
+        <span class="q-count" data-count-idx="${i}">0 caratteri</span>
+        <span class="q-count" style="color:var(--text-muted)">almeno 15</span>
+      </div>
+    `;
+    zoneBody.appendChild(block);
+  });
+  // wire textareas
+  zoneBody.querySelectorAll('.q-textarea').forEach(ta => {
+    updateQCount(ta);
+    ta.addEventListener('input', () => {
+      const idx = parseInt(ta.dataset.qIdx);
+      state.zones[zoneId].answers[idx] = ta.value;
+      updateQCount(ta);
+      checkZoneCompletion();
+      saveState();
+    });
+  });
+  checkZoneCompletion();
+  zoneModal.classList.add('active');
+  resetHintTimer();
+}
+
+function updateQCount(ta){
+  const idx = parseInt(ta.dataset.qIdx);
+  const len = ta.value.trim().length;
+  const counter = zoneBody.querySelector(`[data-count-idx="${idx}"]`);
+  if(counter){
+    counter.textContent = len + ' caratteri';
+    counter.classList.toggle('ok', len >= 15);
+  }
+}
+
+function checkZoneCompletion(){
+  if(!state.currentZone) return;
+  const zone = ZONES.find(z => z.id === state.currentZone);
+  const answers = state.zones[state.currentZone].answers;
+  const allMinLength = answers.every(a => a.trim().length >= 15);
+  const joined = answers.join(' ').toLowerCase();
+  const hasKeyword = zone.keywords.some(k => joined.includes(k));
+  const ok = allMinLength && hasKeyword;
+  btnZoneSubmit.disabled = !ok;
+  const note = $('#zone-note');
+  if(!allMinLength){
+    note.textContent = 'Scrivi almeno 15 caratteri per ogni risposta. Serve una frase vera, non una parola.';
+  } else if(!hasKeyword){
+    note.textContent = 'Guarda ancora quella zona: manca qualcosa di concreto nelle tue risposte. Nomina le cose che vedi.';
+  } else {
+    note.textContent = 'Puoi ricevere il frammento.';
+  }
+}
+
+btnZoneClose.addEventListener('click', () => {
+  zoneModal.classList.remove('active');
+  state.currentZone = null;
+});
+
+btnZoneSubmit.addEventListener('click', () => {
+  const zoneId = state.currentZone;
+  const zone = ZONES.find(z => z.id === zoneId);
+  state.zones[zoneId].solved = true;
+  saveState();
+  zoneModal.classList.remove('active');
+  // aggiorna UI
+  const el = document.querySelector(`.hotspot[data-zone-id="${zoneId}"]`);
+  if(el){ el.classList.add('solved'); el.classList.remove('pulse'); }
+  renderSideFragments();
+  updateCartoProgress();
+  // mostra reveal
+  showRevealModal(zone, false);
+  resetHintTimer();
+});
+
+// -------- REVEAL MODAL --------
+const revealModal = $('#reveal-modal');
+function showRevealModal(zone, alreadySeen){
+  $('#reveal-fragment').textContent = zone.fragment;
+  $('#reveal-insight').textContent = alreadySeen
+    ? zone.insight + ' — Hai già esplorato questa zona.'
+    : zone.insight;
+  revealModal.classList.add('active');
+}
+$('#btn-reveal-close').addEventListener('click', () => {
+  revealModal.classList.remove('active');
+  state.currentZone = null;
+});
+
+// -------- FRASE (drag & drop) --------
+$('#btn-to-frase').addEventListener('click', () => startFrase());
+
+function startFrase(){
+  showScreen('screen-frase');
+  // slots vuoti
+  const slotsWrap = $('#frase-slots');
+  slotsWrap.innerHTML = '';
+  for(let i = 0; i < TARGET_PHRASE.length; i++){
+    const slot = document.createElement('div');
+    slot.className = 'frase-slot';
+    slot.dataset.idx = i;
+    slot.textContent = '';
+    slotsWrap.appendChild(slot);
+  }
+  // bank: frammenti mescolati
+  renderBank();
+  wireDragDrop();
+  state.composed = new Array(TARGET_PHRASE.length).fill(null);
+  $('#btn-frase-check').disabled = true;
+}
+
+function renderBank(){
+  const bank = $('#frase-bank');
+  bank.innerHTML = '';
+  const frags = ZONES.map(z => z.fragment);
+  // shuffle
+  const shuffled = frags.slice().sort(() => Math.random() - 0.5);
+  shuffled.forEach(f => {
+    const chip = document.createElement('div');
+    chip.className = 'frase-chip';
+    chip.textContent = f;
+    chip.draggable = true;
+    chip.dataset.word = f;
+    bank.appendChild(chip);
+  });
+}
+
+function wireDragDrop(){
+  let dragged = null;
+
+  document.querySelectorAll('.frase-chip').forEach(chip => {
+    chip.addEventListener('dragstart', (e) => {
+      dragged = chip;
+      chip.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', chip.dataset.word);
+    });
+    chip.addEventListener('dragend', () => {
+      chip.classList.remove('dragging');
+      dragged = null;
+    });
+    // click: rimetti in bank se è in uno slot
+    chip.addEventListener('click', () => {
+      if(chip.parentElement && chip.parentElement.classList.contains('frase-slot')){
+        const slot = chip.parentElement;
+        $('#frase-bank').appendChild(chip);
+        chip.classList.remove('used');
+        slot.classList.remove('filled','right','wrong');
+        slot.textContent = '';
+        const idx = parseInt(slot.dataset.idx);
+        state.composed[idx] = null;
+        checkFraseReady();
+      }
+    });
+  });
+
+  document.querySelectorAll('.frase-slot').forEach(slot => {
+    slot.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      slot.classList.add('drag-over');
+    });
+    slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+    slot.addEventListener('drop', (e) => {
+      e.preventDefault();
+      slot.classList.remove('drag-over');
+      if(!dragged) return;
+      // se lo slot era pieno, rimetti il vecchio chip nel bank
+      if(slot.firstElementChild){
+        const old = slot.firstElementChild;
+        $('#frase-bank').appendChild(old);
+      }
+      slot.innerHTML = '';
+      slot.appendChild(dragged);
+      slot.classList.add('filled');
+      slot.classList.remove('right','wrong');
+      const idx = parseInt(slot.dataset.idx);
+      state.composed[idx] = dragged.dataset.word;
+      checkFraseReady();
+    });
+  });
+}
+
+function checkFraseReady(){
+  const filled = state.composed.filter(x => x !== null).length;
+  $('#btn-frase-check').disabled = filled < TARGET_PHRASE.length;
+}
+
+$('#btn-frase-reset').addEventListener('click', () => {
+  startFrase();
+});
+
+$('#btn-frase-check').addEventListener('click', () => {
+  const slots = $$('.frase-slot');
+  let allRight = true;
+  slots.forEach((slot, i) => {
+    const placed = state.composed[i];
+    if(placed === TARGET_PHRASE[i]){
+      slot.classList.remove('wrong');
+      slot.classList.add('right');
+    } else {
+      slot.classList.remove('right');
+      slot.classList.add('wrong');
+      allRight = false;
+    }
+  });
+  if(allRight){
+    setTimeout(() => startDebrief(), 1200);
+  } else {
+    // piccolo feedback: il pulsante diventa "riprova"
+    $('#btn-frase-check').textContent = 'Riprova';
+  }
+});
+
+// -------- DEBRIEF --------
+function startDebrief(){
+  showScreen('screen-debrief');
+  $('#debrief-phrase').textContent = TARGET_PHRASE.join(' ') + '.';
+  renderDebriefCompare();
+  renderDebriefZones();
+}
+
+function renderDebriefCompare(){
+  const recallUl = $('#debrief-recall');
+  recallUl.innerHTML = '';
+  state.recall.forEach(r => {
+    if(!r) return;
+    // euristica: la "cosa vista" corrisponde a una delle zone?
+    const matched = zoneMatchingRecall(r);
+    const li = document.createElement('li');
+    const tag = matched ? '<span class="tag warm">Zona</span>' : '<span class="tag cold">Dettaglio</span>';
+    li.innerHTML = tag + '<span>' + escapeHtml(r) + '</span>';
+    recallUl.appendChild(li);
+  });
+
+  const slowUl = $('#debrief-slow');
+  slowUl.innerHTML = '';
+  ZONES.forEach(z => {
+    const li = document.createElement('li');
+    li.innerHTML = '<span class="tag warm">' + z.fragment + '</span><span>' + z.theme + '</span>';
+    slowUl.appendChild(li);
+  });
+}
+
+function zoneMatchingRecall(text){
+  const t = text.toLowerCase();
+  return ZONES.find(z => z.keywords.some(k => t.includes(k)));
+}
+
+function renderDebriefZones(){
+  const wrap = $('#debrief-zones');
+  wrap.innerHTML = '';
+  ZONES.forEach(z => {
+    const card = document.createElement('div');
+    card.className = 'debrief-zone';
+    card.innerHTML = `
+      <div class="debrief-zone-head">
+        <div class="debrief-zone-name">${z.name}</div>
+        <div class="debrief-zone-frag">${z.fragment}</div>
+      </div>
+      <div class="debrief-zone-insight">${z.insight}</div>
+    `;
+    wrap.appendChild(card);
+  });
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+
+// -------- EXPORT & RESTART --------
+$('#btn-export').addEventListener('click', () => {
+  const lines = [];
+  lines.push('GUARDA DUE VOLTE — Il mio foglio');
+  lines.push('================================');
+  lines.push('');
+  lines.push('Studente: ' + state.user.nome + ' — Classe: ' + state.user.classe);
+  lines.push('Tempo totale: ' + Math.floor((Date.now() - state.startTime)/60000) + ' minuti');
+  lines.push('');
+  lines.push('--- Sguardo veloce (30s) ---');
+  state.recall.forEach((r,i) => r && lines.push((i+1) + '. ' + r));
+  lines.push('');
+  lines.push('--- Sguardo lento (8 zone) ---');
+  ZONES.forEach(z => {
+    lines.push('');
+    lines.push('> ' + z.name.toUpperCase() + ' — frammento: ' + z.fragment);
+    z.questions.forEach((q, i) => {
+      lines.push('  D: ' + q);
+      lines.push('  R: ' + (state.zones[z.id].answers[i] || '—'));
+    });
+    lines.push('  [ ' + z.theme + ' ]');
+  });
+  lines.push('');
+  lines.push('--- La frase ricomposta ---');
+  lines.push(TARGET_PHRASE.join(' ') + '.');
+  lines.push('');
+  lines.push('Un\'immagine non finisce quando smetti di guardarla.');
+  lines.push('Finisce quando smetti di farle domande.');
+
+  const blob = new Blob([lines.join('\n')], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'guarda-due-volte_' + state.user.nome.replace(/\s+/g,'_').toLowerCase() + '.txt';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+$('#btn-restart').addEventListener('click', () => {
+  if(!confirm('Vuoi ricominciare da capo? I dati attuali verranno cancellati.')) return;
+  localStorage.removeItem('guarda-due-volte-v1');
+  location.reload();
+});
+
+// -------- AUTO-RESUME se c'è uno stato precedente --------
+(function init(){
+  const restored = loadState();
+  if(restored && state.user.nome){
+    updateUserBadge();
+    // decidi dove ripartire
+    const solved = Object.values(state.zones).filter(z => z.solved).length;
+    if(solved === 8){
+      startDebrief();
+    } else if(state.recall.filter(r => r.length >= 3).length >= 5){
+      startCartografia();
+    } else if(state.startTime){
+      startRecall();
+    }
+  }
+})();
+
+</script>
+</body>
+</html>
